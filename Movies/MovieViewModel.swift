@@ -8,6 +8,9 @@
 import Foundation
 
 struct MovieModel: Codable {
+    
+    
+    
 //   let page: Int
     let results: [Result]
 //    let totalPages, totalResults: Int
@@ -18,8 +21,9 @@ struct Result: Codable,Identifiable {
     
     let id: Double
     let overview: String
-//    let vote_average: Int?
+    let voteAverage: Double
 //    let firstAirDate, originalName: String?
+    let firstAirDate: String?
 //    let originCountry: [String]?
 //    let genreIDS: [Int]
 //    let voteCount: Int
@@ -27,7 +31,7 @@ struct Result: Codable,Identifiable {
 //    let id: Int
 //    let poster_path: String
     let name: String?
-//    let backdropPath: String
+    let backdropPath: String
 //    let popularity: Double
 //    let mediaType: MediaType
 //    let adult: Bool?
@@ -35,6 +39,10 @@ struct Result: Codable,Identifiable {
 //    let video: Bool?
     let title: String?
     let releaseDate: String?
+    
+    var backdropURL: URL {
+        return URL(string: "https://image.tmdb.org/t/p/w500\(backdropPath)")!
+    }
 }
 
 
