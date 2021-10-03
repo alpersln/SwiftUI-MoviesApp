@@ -9,32 +9,26 @@ import SwiftUI
 import SDWebImageSwiftUI
 
 struct ContentView: View {
-        
-    @ObservedObject var network = MovieViewModel()
-   // let movies: [Result]
-    
 
-    
+    @ObservedObject var network = MovieViewModel()
+
     var body: some View {
-        NavigationView{
-           
-               // Text(viewModel.description).font(.system(size: 14))
-            List(network.results){movies in
-                NavigationLink(destination: detailView(maurl:movies.backdropURL,description: movies.overview, name: movies.name ?? "", title: movies.title ?? "", votes: movies.voteAverage, date: movies.releaseDate ?? "", date2: movies.firstAirDate ?? "")) {
-                VStack{
-                    
-                if movies.backdropPath != "" {
-                    WebImage(url: movies.backdropURL,
-                             options: .highPriority,
-                             context: nil).resizable().cornerRadius(10)
-                }
-                    
-                    Item(description: movies.overview, name: movies.name ?? "", title: movies.title ?? "")
-              //  Item(description: movies.description)
-                }
+        NavigationView {
+            List(network.results) { movie in
+                NavigationLink(destination: detailView(movie: movie)) {
+                    VStack {
+                        if movie.backdropPath != "" {
+                            WebImage(url: movie.backdropURL, options: .highPriority, context: nil)
+                                .resizable()
+                                .cornerRadius(10)
+                        }
+
+                        Item(description: movie.overview, name: movie.name ?? "", title: movie.title ?? "")
+                    }
                 }
             }
             .navigationBarTitle("Weekly Popular")
+            .listStyle(PlainListStyle())
         } .onAppear {
             self.network.fetchMovies()
         }
@@ -47,38 +41,37 @@ struct ContentView_Previews: PreviewProvider {
     }
 }
 
-//https://api.themoviedb.org/3/trending/all/week?api_key=15c159bf5e0db119c2aea4ad8b832788
-
 struct Item: View {
-    
+
     var description: String
- //   var vote: Double
+//    var vote: Double
 //    var poster: String
     var name: String
     var title: String
-   
-    
-    
-    
-    init(description: String, name: String, title: String){
-        
+
+    init(description: String, name: String, title: String) {
         self.description = description
         self.name = name
         self.title = title
-        
     }
-    
+
     var body: some View {
-        
-        VStack{
+        VStack {
             //image
             //title text
-            
-            
-            Text(title).bold().font(.system(size: 22))
-            Text(name).bold().font(.system(size: 22))
-            Text(description).bold().font(.system(size: 14)).lineLimit(2).padding(.bottom,12).foregroundColor(.gray)
-   //         Text(String(vote))
+
+            Text(title)
+                .bold()
+                .font(.system(size: 22))
+            Text(name)
+                .bold()
+                .font(.system(size: 22))
+            Text(description)
+                .bold()
+                .font(.system(size: 14))
+                .lineLimit(2)
+                .padding(.bottom,12)
+                .foregroundColor(.gray)
 
             //vote star
             //release date
@@ -90,57 +83,45 @@ struct Item: View {
 
 struct detailView: View {
 
-    
+    var movie: Result
 
-  //  let make : MovieViewModel
-    var maurl: URL
-    var description: String
- //   var vote: Double
-//    var poster: String
-    var name: String
-    var title: String
-    var votes: Double
-    var date: String
-    var date2: String
-    
-    init(maurl:URL,description: String, name: String, title: String, votes: Double, date: String, date2: String){
-        self.maurl = maurl
-        self.description = description
-        self.name = name
-        self.title = title
-        self.votes = votes
-        self.date = date
-        self.date2 = date2
-    }
     var body: some View {
-        let formatted = String(format: "%.1f", votes)
+        let formatted = String(format: "%.1f", movie.voteAverage)
         let SFStar = Image(systemName: "star.fill").foregroundColor(.yellow)
-        VStack{
-            //image
-            //title text
-            WebImage(url: maurl,
-                     options: .highPriority,
-                     context: nil).resizable().cornerRadius(10).frame(width: 400, height: 400)
-            Text(title).bold().font(.system(size: 22))
-            Text(name).bold().font(.system(size: 22))
-            Text(description).bold().font(.system(size: 14)).padding(12).foregroundColor(.black)
-            HStack{
-                
-                ForEach(0..<3){ item in
-                    SFStar
-                }
-                Image(systemName: "star.lefthalf.fill").foregroundColor(.yellow)
-                Image(systemName: "star").foregroundColor(.yellow)
-                Text("(\(formatted))")
-                Spacer()
-                Text(date)
-                Text(date2)
-            }.padding()
-            
-   //         Text(String(vote))
+        ScrollView {
+            VStack {
+                //image
+                //title text
+                WebImage(url: movie.backdropURL, options: .highPriority, context: nil)
+                    .resizable()
+                    .cornerRadius(10)
+                    .frame(height: 400)
+                    .padding(.horizontal, 12)
+                Text(movie.title ?? "").bold().font(.system(size: 22))
+                Text(movie.name ?? "").bold().font(.system(size: 22))
+                Text(movie.overview)
+                    .bold()
+                    .font(.system(size: 14))
+                    .padding(12)
+                    .foregroundColor(.black)
 
-            //vote star
-            //release date
+                HStack {
+
+                    ForEach(0..<3){ item in
+                        SFStar
+                    }
+
+                    Image(systemName: "star.lefthalf.fill").foregroundColor(.yellow)
+                    Image(systemName: "star").foregroundColor(.yellow)
+                    Text("(\(formatted))")
+                    Spacer()
+                    Text(movie.releaseDate ?? "")
+                    Text(movie.firstAirDate ?? "")
+                }.padding()
+
+                //vote star
+                //release date
+            }
         }
     }
 }
