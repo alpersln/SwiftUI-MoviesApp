@@ -8,17 +8,11 @@
 import Foundation
 
 struct MovieModel: Codable {
-    
-    
-    
-//   let page: Int
     let results: [Result]
-//    let totalPages, totalResults: Int
 }
 
 // MARK: - Result
 struct Result: Codable,Identifiable {
-    
     let id: Double
     let overview: String
     let voteAverage: Double
@@ -39,27 +33,18 @@ struct Result: Codable,Identifiable {
 //    let video: Bool?
     let title: String?
     let releaseDate: String?
-    
+
     var backdropURL: URL {
         return URL(string: "https://image.tmdb.org/t/p/w500\(backdropPath)")!
     }
 }
 
 
-
 class MovieViewModel: ObservableObject {
-    
+
     @Published var results = [Result]()
-    
- //   @Published var description: String = ""
-    
-//
-//
-//    init() {
-//        fetchMovies()
-//    }
-    
-    func fetchMovies(){
+
+    func fetchMovies() {
         guard let url = URL(string: "https://api.themoviedb.org/3/trending/all/week?api_key=15c159bf5e0db119c2aea4ad8b832788") else {return}
         let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
             guard let data = data , error == nil else {
@@ -73,8 +58,7 @@ class MovieViewModel: ObservableObject {
                 DispatchQueue.main.async {
                     self.results = result.results
                 }
-            }
-            catch {
+            } catch {
                 print("failed")
             }
         }
